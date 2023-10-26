@@ -1,8 +1,8 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Clientes from "./paginas/clientes/Clientes";
+import Clientes from "./paginas/cliente/Clientes";
 import Error from "./Error";
-import Vendas from "./paginas/Vendas/Vendas";
+import Vendas from "./paginas/venda/Vendas"
 import Estoque from "./paginas/Estoque/Estoque";
 import Dashboard from "./paginas/dashboard/Dashboard";
 import Login from "./paginas/login/Login";

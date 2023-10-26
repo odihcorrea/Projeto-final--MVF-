@@ -17,7 +17,7 @@ import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems, secondaryListItems } from "./listItems";
-import Orders from "./Produtos";
+import Orders from "../estoque/Produtos";
 
 function Copyright(props) {
   return (
@@ -88,7 +88,7 @@ const defaultTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#007bff",
+      main: "#28a745",
     },
     secondary: {
       main: "#f50057",
@@ -149,7 +149,7 @@ export default function Estoque() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              Produtos
             </Typography>
             <IconButton color="inherit">AC - Gestão de vendas</IconButton>
           </Toolbar>

@@ -11,25 +11,25 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 export const mainListItems = (
   <React.Fragment>
-    <ListItemButton className=" bg-primary">
+    <ListItemButton className="bg-primary" to='dashboard'>
       <ListItemIcon>
         <DashboardIcon className=" text-light" />
       </ListItemIcon>
       <ListItemText primary="Dashboard" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton to='estoque'>
       <ListItemIcon>
         <AssignmentIcon className="text-light" />
       </ListItemIcon>
       <ListItemText primary="Produtos" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton to='vendas'>
       <ListItemIcon>
         <ShoppingCartIcon className="text-light" />
       </ListItemIcon>
       <ListItemText primary="Vendas" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton to='clientes'>
       <ListItemIcon>
         <PeopleIcon className="text-light" />
       </ListItemIcon>

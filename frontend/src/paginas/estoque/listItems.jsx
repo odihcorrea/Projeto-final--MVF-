@@ -9,39 +9,63 @@ import LayersIcon from "@mui/icons-material/Layers";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
+
+import Backdrop from '@mui/material/Backdrop';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import Fade from '@mui/material/Fade';
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+
 export const mainListItems = (
   <React.Fragment>
-    <ListItemButton className=" bg-primary">
+    <ListItemButton to='dashboard'>
       <ListItemIcon>
         <DashboardIcon className=" text-light" />
       </ListItemIcon>
       <ListItemText primary="Dashboard" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton to='estoque' className="bg-success">
       <ListItemIcon>
         <AssignmentIcon className="text-light" />
       </ListItemIcon>
       <ListItemText primary="Produtos" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton to='vendas'>
       <ListItemIcon>
         <ShoppingCartIcon className="text-light" />
       </ListItemIcon>
       <ListItemText primary="Vendas" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton to='clientes'>
       <ListItemIcon>
         <PeopleIcon className="text-light" />
       </ListItemIcon>
       <ListItemText primary="Clientes" />
     </ListItemButton>
-    <ListItemButton to="/">
+    <ListItemButton to='/'>
       <ListItemIcon>
         <ExitToAppIcon className="text-light" />
       </ListItemIcon>
       <ListItemText primary="Sair" />
     </ListItemButton>
   </React.Fragment>
+ 
+
 );
+
+
+
 
 export const secondaryListItems = <React.Fragment></React.Fragment>;
