@@ -1,71 +1,117 @@
-import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
-import Title from './Title';
+import React, { useState, useEffect } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { Container, Grid, Paper, Typography } from "@mui/material";
+import axios from "axios";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-// Generate Sales Data
-function createData(time, amount) {
-  return { time, amount };
-}
 
-const data = [
-  createData('00:00', 0),
-  createData('03:00', 300),
-  createData('06:00', 600),
-  createData('09:00', 800),
-  createData('12:00', 1500),
-  createData('15:00', 2000),
-  createData('18:00', 2400),
-  createData('21:00', 2400),
-  createData('24:00', undefined),
-];
+function Chart() {
+  const [vendas, setVendas] = useState([]);
+  const [products, setProducts] = useState([]);
 
-export default function Chart() {
-  const theme = useTheme();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/venda");
+        setVendas(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar dados de vendas:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/produto");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar dados de produtos:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const generateChartData = () => {
+    const chartData = [];
+
+    vendas.forEach((venda) => {
+      try {
+        // Verifica se a data é válida (pode variar dependendo do formato na sua base de dados)
+        const dataVenda = format(new Date(venda.datavenda), "dd/MM/yyyy", { locale: ptBR });
+
+        const totalPrecoVenda = products
+          .filter((produto) => produto.id === venda.id_produto)
+          .reduce((total, produto) => total + produto.precovenda, 0);
+
+        chartData.push({
+          dataVenda,
+          totalPrecoVenda,
+        });
+      } catch (error) {
+        console.error("Erro ao processar data:", error);
+      }
+    });
+
+    return chartData;
+  };
 
   return (
-    <React.Fragment>
-      <Title>Today</Title>
-      <ResponsiveContainer>
-        <LineChart
-          data={data}
-          margin={{
-            top: 16,
-            right: 16,
-            bottom: 0,
-            left: 24,
-          }}
-        >
-          <XAxis
-            dataKey="time"
-            stroke={theme.palette.text.secondary}
-            style={theme.typography.body2}
-          />
-          <YAxis
-            stroke={theme.palette.text.secondary}
-            style={theme.typography.body2}
-          >
-            <Label
-              angle={270}
-              position="left"
-              style={{
-                textAnchor: 'middle',
-                fill: theme.palette.text.primary,
-                ...theme.typography.body1,
-              }}
-            >
-              Sales ($)
-            </Label>
-          </YAxis>
-          <Line
-            isAnimationActive={false}
-            type="monotone"
-            dataKey="amount"
-            stroke={theme.palette.primary.main}
-            dot={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </React.Fragment>
+    <Grid item xs={12} md={8} lg={7}>
+      <Paper
+        sx={{
+          p: 2,
+          display: "flex",
+          flexDirection: "column",
+          height: 350,
+        }}
+      >
+        <Container>
+          <Typography variant="h6" gutterBottom>
+            Vendas por Data
+          </Typography>
+          <ResponsiveContainer width="100%" height={280}>
+            <LineChart data={generateChartData()}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="dataVenda" />
+              <YAxis
+                tickFormatter={(value) =>
+                  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)
+                }
+              />
+              <Tooltip
+                formatter={(value) =>
+                  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)
+                }
+                labelFormatter={(label) => label}
+              />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="totalPrecoVenda"
+                name="Total de Vendas"
+                stroke="#8884d8"
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </Container>
+      </Paper>
+    </Grid>
   );
 }
+
+export default Chart;

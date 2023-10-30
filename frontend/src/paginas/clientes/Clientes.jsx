@@ -15,7 +15,8 @@ import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems, secondaryListItems } from "./listItems";
-import Orders from "./Produtos";
+import Cliente from "./Produtos";
+
 
 function Copyright(props) {
   return (
@@ -86,7 +87,7 @@ const defaultTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#dc3545",
+      main: "#6c757d",
     },
     secondary: {
       main: "#f50057",
@@ -112,7 +113,7 @@ const defaultTheme = createTheme({
   },
 });
 
-export default function Estoque() {
+export default function Clientes() {
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
@@ -147,7 +148,7 @@ export default function Estoque() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              Clientes
             </Typography>
             <IconButton color="inherit">AC - Gestão de vendas</IconButton>
           </Toolbar>
@@ -191,7 +192,7 @@ export default function Estoque() {
              {/* Recent Orders */}
               <Grid item xs={12}>
                 <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-                  <Orders />
+                  <Cliente />
                 </Paper>
               </Grid>
             </Grid>

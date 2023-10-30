@@ -1,86 +1,129 @@
-import * as React from 'react';
-import Link from '@mui/material/Link';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Title from './Title';
+import React, { useEffect, useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import axios from "axios";
+import { format } from "date-fns";
 
-// Generate Order Data
-function createData(id, date, name, shipTo, paymentMethod, amount) {
-  return { id, date, name, shipTo, paymentMethod, amount };
-}
+function Orders() {
+  const [vendas, setVendas] = useState([]);
+  const [products, setProducts] = useState([]);
 
-const rows = [
-  createData(
-    0,
-    '16 Mar, 2019',
-    'Elvis Presley',
-    'Tupelo, MS',
-    'VISA ⠀•••• 3719',
-    312.44,
-  ),
-  createData(
-    1,
-    '16 Mar, 2019',
-    'Paul McCartney',
-    'London, UK',
-    'VISA ⠀•••• 2574',
-    866.99,
-  ),
-  createData(2, '16 Mar, 2019', 'Tom Scholz', 'Boston, MA', 'MC ⠀•••• 1253', 100.81),
-  createData(
-    3,
-    '16 Mar, 2019',
-    'Michael Jackson',
-    'Gary, IN',
-    'AMEX ⠀•••• 2000',
-    654.39,
-  ),
-  createData(
-    4,
-    '15 Mar, 2019',
-    'Bruce Springsteen',
-    'Long Branch, NJ',
-    'VISA ⠀•••• 5919',
-    212.79,
-  ),
-];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/venda");
+        setVendas(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar dados de vendas:", error);
+      }
+    };
 
-function preventDefault(event) {
-  event.preventDefault();
-}
+    fetchData();
+  }, []);
 
-export default function Orders() {
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/produto");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar dados de produtos:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const getValorTotal = (row) => {
+    const product = products.find((p) => p.id === row.id_produto);
+    return product ? product.precovenda * row.quantidade : 0;
+  };
+
+  const getLucro = (row) => {
+    const product = products.find((p) => p.id === row.id_produto);
+    return product
+      ? (product.precovenda - product.precocompra) * row.quantidade
+      : 0;
+  };
+
+  const formatData = (date) => {
+    return format(new Date(date), "dd/MM/yyyy");
+  };
+
+  const formatCurrency = (value) => {
+    return `R$ ${value}`;
+  };
+
+  const rows = vendas.map((venda) => {
+    const valorTotal = getValorTotal(venda);
+    const lucro = getLucro(venda);
+    return {
+      ...venda,
+      dataFormatada: formatData(venda.datavenda),
+      valorTotal: `R$ ${valorTotal.toFixed(2)}`, // Adicione o "R$" aqui
+      lucro: `R$ ${lucro.toFixed(2)}`, // Adicione o "R$" aqui
+    };
+  });
+
+  // Agregando os valores totais e lucros totais por data
+  const dataAgregada = rows.reduce((agregado, venda) => {
+    const dataFormatada = venda.dataFormatada;
+
+    if (!agregado[dataFormatada]) {
+      agregado[dataFormatada] = {
+        dataFormatada,
+        valorTotal: 0,
+        lucroTotal: 0,
+      };
+    }
+
+    const valorTotal = parseFloat(
+      venda.valorTotal.replace("R$ ", "").replace(",", ".")
+    );
+    const lucro = parseFloat(venda.lucro.replace("R$ ", "").replace(",", "."));
+
+    agregado[dataFormatada].valorTotal += valorTotal;
+    agregado[dataFormatada].lucroTotal += lucro;
+
+    return agregado;
+  }, {});
+
+  // Convertendo o objeto em um array
+  const dataAgregadaArray = Object.values(dataAgregada).map((data, index) => ({
+    ...data,
+    id: index,
+  }));
+
+  // Defina as colunas da tabela
+  const columns = [
+    { field: "dataFormatada", headerName: "Data da Venda", width: 400, },
+    {
+      field: "valorTotal",
+      headerName: "Valor Total",
+      width: 350,
+      renderCell: (e) => {
+        return `R$ ${e.value},00`;
+      },
+    },
+    {
+      field: "lucroTotal",
+      headerName: "Lucro Total",
+      width: 350,
+      renderCell: (e) => {
+        return `R$ ${e.value},00`;
+      },
+    },
+  ];
+
   return (
-    <React.Fragment>
-      <Title>Recent Orders</Title>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Ship To</TableCell>
-            <TableCell>Payment Method</TableCell>
-            <TableCell align="right">Sale Amount</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell>{row.date}</TableCell>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.shipTo}</TableCell>
-              <TableCell>{row.paymentMethod}</TableCell>
-              <TableCell align="right">{`$${row.amount}`}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
-        See more orders
-      </Link>
-    </React.Fragment>
+    <div style={{ height: 400, width: "100%" }}>
+      <DataGrid
+        rows={dataAgregadaArray}
+        columns={columns}
+        pageSize={5}
+        getRowId={(row) => row.dataFormatada}
+      />
+    </div>
   );
 }
+
+export default Orders;

@@ -15,7 +15,7 @@ function Login() {
   return (
     <MDBContainer fluid className="mb-5">
       
-      <nav className="navbar bg-body-tertiary bg-primary mb-5 p-3 mt-0">
+      <nav className="navbar bg-body-tertiary bg-success mb-5 p-3 mt-0">
         <div className="container-fluid">
           <h1 className="display-5 text-light m-auto p-1">AC - GESTÃO DE VENDAS</h1>
         </div>
@@ -56,7 +56,7 @@ function Login() {
             <a href="!#">Esqueceu a senha?</a>
           </div>
 
-          <Button href="dashboard" variant="contained" className="p-2 mb-4 w-100 text-light" size="lg">
+          <Button href="dashboard" variant="contained" className="p-2 mb-4 w-100 text-light bg-danger" size="lg">
             Entrar
           </Button>
         </MDBCol>

@@ -1,27 +1,44 @@
-import * as React from 'react';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import Title from './Title';
+import React, { useState, useEffect } from 'react';
+import { DataGrid } from '@mui/x-data-grid';
+import axios from 'axios';
 
-function preventDefault(event) {
-  event.preventDefault();
-}
+function Deposits() {
+  const [categoriasComQuantidadeDeItens, setCategoriasComQuantidadeDeItens] = useState([]);
+  
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const produtosResponse = await axios.get("http://localhost:3000/produto"); // Substitua pela sua URL de produtos
+        const categoriasResponse = await axios.get("http://localhost:3000/categoria"); // Substitua pela sua URL de categorias
 
-export default function Deposits() {
+        const produtos = produtosResponse.data;
+        const categorias = categoriasResponse.data;
+
+        const categoriasComQuantidade = categorias.map((categoria) => {
+          const produtosDaCategoria = produtos.filter((produto) => produto.id_categoria === categoria.id);
+          const quantidadeDeItens = produtosDaCategoria.reduce((total, produto) => total + (produto.quantidade || 0), 0);
+          return { id: categoria.id, nome: categoria.nome, quantidadeDeItens };
+        });
+
+        setCategoriasComQuantidadeDeItens(categoriasComQuantidade);
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  const columns = [
+    { field: 'nome', headerName: 'Nome da Categoria', flex: 1 },
+    { field: 'quantidadeDeItens', headerName: 'Quantidade de Itens', flex: 1, align: "center" },
+  ];
+
   return (
-    <React.Fragment>
-      <Title>Recent Deposits</Title>
-      <Typography component="p" variant="h4">
-        $3,024.00
-      </Typography>
-      <Typography color="text.secondary" sx={{ flex: 1 }}>
-        on 15 March, 2019
-      </Typography>
-      <div>
-        <Link color="primary" href="#" onClick={preventDefault}>
-          View balance
-        </Link>
-      </div>
-    </React.Fragment>
+    <div style={{ height: 400, width: '100%' }}>
+      <DataGrid rows={categoriasComQuantidadeDeItens} columns={columns} />
+    </div>
   );
 }
+
+export default Deposits;

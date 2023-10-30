@@ -5,50 +5,50 @@ import ListItemText from "@mui/material/ListItemText";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PeopleIcon from "@mui/icons-material/People";
-import LayersIcon from "@mui/icons-material/Layers";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
+const listItemStyle = {
+  "&:hover": {
+    color: "white",
+    background: "gray"
 
+  },
+};
 
 export const mainListItems = (
   <React.Fragment>
-    <ListItemButton to='dashboard'>
+    <ListItemButton to='dashboard' sx={listItemStyle}>
       <ListItemIcon>
-        <DashboardIcon className=" text-light" />
+        <DashboardIcon className="text-light" />
       </ListItemIcon>
       <ListItemText primary="Dashboard" />
     </ListItemButton>
-    <ListItemButton to='estoque'>
+    <ListItemButton to='estoque' sx={listItemStyle}>
       <ListItemIcon>
         <AssignmentIcon className="text-light" />
       </ListItemIcon>
       <ListItemText primary="Produtos" />
     </ListItemButton>
-    <ListItemButton to='vendas' className="bg-danger">
+    <ListItemButton to='vendas' className="bg-danger" sx={listItemStyle}>
       <ListItemIcon>
         <ShoppingCartIcon className="text-light" />
       </ListItemIcon>
       <ListItemText primary="Vendas" />
     </ListItemButton>
-    <ListItemButton to='clientes'>
+    <ListItemButton to='clientes' sx={listItemStyle}>
       <ListItemIcon>
         <PeopleIcon className="text-light" />
       </ListItemIcon>
       <ListItemText primary="Clientes" />
     </ListItemButton>
-    <ListItemButton to='/'>
+    <ListItemButton to='/' sx={listItemStyle}>
       <ListItemIcon>
         <ExitToAppIcon className="text-light" />
       </ListItemIcon>
       <ListItemText primary="Sair" />
     </ListItemButton>
   </React.Fragment>
- 
-
 );
-
-
-
 
 export const secondaryListItems = <React.Fragment></React.Fragment>;
