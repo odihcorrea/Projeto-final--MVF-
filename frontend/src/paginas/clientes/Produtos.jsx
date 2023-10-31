@@ -453,6 +453,7 @@ export default function Cliente() {
       field: "contato",
       headerName: "Contato",
       width: 150,
+      align: "right"
     },
     {
       field: "endereco",

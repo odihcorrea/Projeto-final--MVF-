@@ -23,6 +23,7 @@ import {
   IconButton,
   Collapse,
   Alert,
+  Link,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
@@ -30,7 +31,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { format } from "date-fns";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
@@ -298,7 +299,6 @@ const Venda = () => {
     setOpenModalVenda(false);
     setCarrinhoTemporario([]);
     setCamposHabilitados(true);
-
   };
 
   const handleCancelarVenda = () => {
@@ -634,7 +634,7 @@ const Venda = () => {
           <Typography className="mb-4 text-danger text-center">
             Adicionar Venda
           </Typography>
-          
+
           <Box
             display={"flex"}
             justifyItems={"center"}
@@ -674,6 +674,8 @@ const Venda = () => {
                 ))}
               </Select>
             </FormControl>
+
+
           </Box>
 
           <Box
@@ -873,7 +875,6 @@ const Venda = () => {
                 justifyItems={"center"}
                 justifyContent={"space-between"}
               >
-                
                 <TextField
                   disabled
                   className="mr-3"
@@ -1025,22 +1026,22 @@ const Venda = () => {
         </Snackbar>
       </Stack>
       {exibirErroQuantidadeZero && (
-                  <Stack spacing={2} sx={{ width: "100%" }}>
-                  <Snackbar
-                    open={exibirErroQuantidadeZero}
-                    autoHideDuration={4000}
-                    onClose={handleCloseSnackbar}
-                  >
-                    <Alert
-                      onClose={handleCloseSnackbar}
-                      severity={"warning"}
-                      sx={{ width: "100%" }}
-                    >
-                      {erroQuantidadeZero}
-                    </Alert>
-                  </Snackbar>
-                </Stack>
-                )}
+        <Stack spacing={2} sx={{ width: "100%" }}>
+          <Snackbar
+            open={exibirErroQuantidadeZero}
+            autoHideDuration={4000}
+            onClose={handleCloseSnackbar}
+          >
+            <Alert
+              onClose={handleCloseSnackbar}
+              severity={"warning"}
+              sx={{ width: "100%" }}
+            >
+              {erroQuantidadeZero}
+            </Alert>
+          </Snackbar>
+        </Stack>
+      )}
     </Container>
   );
 };

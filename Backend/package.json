@@ -8,7 +8,8 @@
     "make-migrate": "npx knex migrate:make --migrations-directory ./db/migrations init",
     "down": "npx knex migrate:down --knexfile ./db/knexfile.js --migrations-directory ./db/migrations",
     "seed": "npx knex seed:run --knexfile ./db/knexfile.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
