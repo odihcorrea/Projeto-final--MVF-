@@ -230,7 +230,8 @@ export default function Produto() {
       await Axios.put(`http://localhost:3000/produto/alterar/${id}`, { quantidade: 0 });
       console.log("Quantidade do produto atualizada para 0 com sucesso!");
       chamarSnackbar("success", "Produto Excluído");
-  
+      handleCloseModal()
+
       // Após atualizar o banco de dados, busque os produtos novamente, excluindo aqueles com quantidade igual a 0
       listProduto()
         .then((dados) => {
@@ -291,12 +292,14 @@ export default function Produto() {
             handleCloseModal();
             setButtonClass("bg-primary");
             listProduto()
-              .then((dados) => {
-                setProducts(dados);
-              })
-              .catch((error) => {
-                console.error("Erro ao buscar produtos:", error);
-              });
+            .then((dados) => {
+              // Filtrar os produtos com quantidade maior que 0
+              const produtosFiltrados = dados.filter((produto) => produto.quantidade > 0);
+              setProducts(produtosFiltrados);
+            })
+            .catch((error) => {
+              console.error("Erro ao buscar produtos:", error);
+            });
           })
           .catch((error) => {
             chamarSnackbar("danger", "Erro ao atualizar produto");
@@ -322,44 +325,23 @@ export default function Produto() {
         handleCloseModal2();
         setSelectedCategoria("");
         chamarSnackbar("success", "Novo produto adicionado");
-
+  
+        // Após adicionar o produto com sucesso, atualize a lista de produtos
         listProduto()
           .then((dados) => {
-            setProducts(dados);
+            // Filtrar os produtos com quantidade maior que 0
+            const produtosFiltrados = dados.filter((produto) => produto.quantidade > 0);
+            setProducts(produtosFiltrados);
           })
           .catch((error) => {
             console.error("Erro ao buscar produtos:", error);
           });
       })
       .catch((error) => {
-        chamarSnackbar("danger", "erro ao adicionar produto");
-        console.error("Erro ao cadastrar a novo produto:", error);
+        chamarSnackbar("danger", "Erro ao adicionar produto");
+        console.error("Erro ao cadastrar o novo produto:", error);
       });
-
-    useEffect(() => {
-      fetchData();
-    }, []);
-
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/produto/"); // Substitua pela sua URL
-        setData(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar dados:", error);
-      }
-
-      setNome("");
-      setQuantidade("");
-      setPrecoCompra("");
-      setPrecoVenda("");
-      setData("");
-      setImagem("");
-      setCategoria("");
-    };
-
-    // Adicione aqui a lógica para enviar os dados do novo produto para o servidor.
-    // Por enquanto, apenas exibiremos os dados no console.
-    console.log("Novo Produto:", newProduct);
+  
     // Limpar o formulário após adicionar o produto.
     setNewProduct({
       nome: "",
@@ -373,6 +355,7 @@ export default function Produto() {
     });
     handleCloseModal();
   };
+  
 
   const colunasCategoria = [
     {

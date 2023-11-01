@@ -77,18 +77,25 @@ const Venda = () => {
   const [exibirErroQuantidadeZero, setExibirErroQuantidadeZero] =
     useState(false);
 
+  const [productTemporario, setproductTemporario] = useState([]);
+
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [open, setOpen] = useState(false);
   const today = new Date();
-  const dia = today.getDate();
-  const mes = today.getMonth() + 1; // O mês começa em 0
+  const dia = String(today.getDate()).padStart(2, '0'); // Adiciona um zero à esquerda, se necessário
+  const mes = String(today.getMonth() + 1).padStart(2, '0'); /// O mês começa em 0
   const ano = today.getFullYear();
 
   const todays = `${ano}-${mes}-${dia}`;
-
+  
   //recuperar arrays do banco
+
+  const filteredProducts = products.filter((product) => product.quantidade > 0);
+  const filteredProductsTemp = productTemporario.filter(
+    (product) => product.quantidade > 0
+  );
 
   function chamarSnackbar(severity, message) {
     setSnackbarSeverity(severity);
@@ -291,8 +298,25 @@ const Venda = () => {
     // Restaurar os valores originais dos campos, se necessário
   };
 
-  const handleOpenVenda = () => {
-    setOpenModalVenda(true);
+  const handleOpenVenda = async () => {
+    try {
+      // Busque os produtos disponíveis
+      const availableProducts = await getAvailableProducts();
+
+      // Atualize o estado local dos produtos com a lista obtida
+      setProducts(availableProducts);
+      setproductTemporario(availableProducts);
+      console.log(availableProducts);
+
+      // Abra o modal de venda
+      setOpenModalVenda(true);
+
+      setSelectedClient("")
+      setSelectedProduct("")
+
+    } catch (error) {
+      // Trate o erro, se necessário
+    }
   };
 
   const handleCloseVenda = () => {
@@ -326,6 +350,21 @@ const Venda = () => {
     setProdutosAdicionados((nome = ""), (quantidade = ""), (precovenda = ""));
   };
 
+  const getAvailableProducts = async () => {
+    try {
+      // Faça uma solicitação ao servidor para obter a lista de produtos
+      const response = await axios.get("http://localhost:3000/produto"); // Substitua pelo endpoint real
+
+      // Extraia os produtos da resposta
+      const products = response.data;
+
+      return products;
+    } catch (error) {
+      console.error("Erro ao buscar produtos disponíveis:", error);
+      throw error;
+    }
+  };
+
   function generateUniqueId() {
     return "_" + Math.random().toString(36).substr(2, 9);
   }
@@ -333,36 +372,63 @@ const Venda = () => {
   const addProduto = () => {
     if (selectedDate && selectedProduct && quantity > 0) {
       const product = products.find((p) => p.id === selectedProduct);
+      const productTemp = productTemporario.find(
+        (p) => p.id === selectedProduct
+      );
 
-      if (product) {
-        if (product.quantidade === 0) {
+      if (productTemp) {
+        if (productTemp.quantidade === 0) {
           setErroQuantidadeZero("Este produto está fora de estoque.");
           setExibirErroQuantidadeZero(true);
           return; // Impede a adição do produto com quantidade zero
         }
+        if (productTemp.quantidade === 0) {
+          const novoArray = productTemporario.filter(
+            (objeto) => objeto.id !== productTemporario.id
+          );
+          setproductTemporario(novoArray);
+        } 
+        else {
+          const novoProduto = {
+            id: generateUniqueId(),
+            id_cliente: selectedClient,
+            datavenda: selectedDate,
+            nome: product.nome,
+            quantidade: quantity,
+            precovenda: product.precovenda,
+            id_produto: product.id,
+          };
 
-        const novoProduto = {
-          id: generateUniqueId(),
-          id_cliente: selectedClient,
-          datavenda: selectedDate,
-          nome: product.nome,
-          quantidade: quantity,
-          precovenda: product.precovenda,
-          id_produto: product.id,
-        };
+          if (productTemp.quantidade < novoProduto.quantidade) {
+            chamarSnackbar("warning", "Quantidade não disponível no Estoque")
+          } else {
 
-        setCarrinhoTemporario([...carrinhoTemporario, novoProduto]);
+          setCarrinhoTemporario([...carrinhoTemporario, novoProduto]);
+          const subtracao = productTemp.quantidade - novoProduto.quantidade;
+          console.log(subtracao)
 
-        if (carrinhoTemporario.length === 0) {
-          setCamposHabilitados(false);
-        }
+          const novoArrayDeObjetos = productTemporario.map(objeto => {
+            if (objeto.id === productTemp.id) {
+              // Edite a chave "chave" no objeto com o ID desejado
+              return { ...objeto, quantidade: subtracao };
+            }
+            return objeto;
+          });
 
-        setQuantity(1);
-        setOpen(false);
+          setproductTemporario(novoArrayDeObjetos)
 
-        // Limpar o erro se houver
-        setErroQuantidadeZero("");
-        setExibirErroQuantidadeZero(false);
+          if (carrinhoTemporario.length === 0) {
+            setCamposHabilitados(false);
+          }
+
+          setQuantity(1);
+          setProdutosAdicionados("")
+          setOpen(false);
+
+          // Limpar o erro se houver
+          setErroQuantidadeZero("");
+          setExibirErroQuantidadeZero(false);
+        }}
       }
     }
   };
@@ -535,9 +601,34 @@ const Venda = () => {
 
   const removeProdutoDoCarrinho = (produtoId) => {
     // Filtra os products que não correspondem ao ID do produto a ser removido
+    
+    const carrinhoTemp = carrinhoTemporario.find( (p) => p.id === produtoId)
+
+
+    const productTempo = productTemporario.find(
+      (p) => p.id === carrinhoTemp.id_produto
+    );
+
+    console.log("p: ", productTempo)
+    console.log("c: ", carrinhoTemp)
+
+    const adicionar = productTempo.quantidade + carrinhoTemp.quantidade
+
+    const novoArrayDeObjetos = productTemporario.map(objeto => {
+      if (objeto.id === carrinhoTemp.id_produto) {
+        // Edite a chave "chave" no objeto com o ID desejado
+        return { ...objeto, quantidade: adicionar };
+      }
+      return objeto;
+    });
+
+    setproductTemporario(novoArrayDeObjetos)
+
+    
     const novoCarrinho = carrinhoTemporario.filter(
       (produto) => produto.id !== produtoId
     );
+
     setCarrinhoTemporario(novoCarrinho);
   };
 
@@ -674,8 +765,7 @@ const Venda = () => {
                 ))}
               </Select>
             </FormControl>
-
-
+            
           </Box>
 
           <Box
@@ -692,13 +782,14 @@ const Venda = () => {
                 value={selectedProduct}
                 onChange={(e) => setSelectedProduct(e.target.value)}
               >
-                {products.map((product) => (
+                {filteredProductsTemp.map((product) => (
                   <MenuItem key={product.id} value={product.id}>
                     {product.nome}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
+
             <TextField
               className="ml-3"
               type="number"
@@ -711,7 +802,13 @@ const Venda = () => {
             fullWidth
             variant="contained"
             className="bg-primary"
-            onClick={addProduto}
+            onClick={() => {
+              if (!selectedClient || !selectedProduct) {
+                chamarSnackbar("warning", "Verifique os campos");
+              } else {
+                addProduto();
+              }
+            }}
           >
             Adicionar Produto
           </Button>
