@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MDBContainer,
   MDBCol,
@@ -41,11 +41,13 @@ function Login() {
   const [senha, setSenha] = useState("");
   
 
+
   const handleEntrarClick = () => {
     if (senha === "123456") {
       window.location.href = "/dashboard"; // Redireciona para a página de dashboard
     } else {
-      chamarSnackbar("warning", "Usuário e/ou senha não encontrados");
+      chamarSnackbar("warning", "A senha para teste é: 123456");
+      
     }
   };
 

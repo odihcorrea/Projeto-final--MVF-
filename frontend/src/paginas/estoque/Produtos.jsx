@@ -33,6 +33,11 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+
 import Axios from "axios";
 import dayjs from "dayjs";
 
@@ -95,6 +100,22 @@ export default function Produto() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleExcluirCategoria = async (e) => {
+    // Abre a caixa de diálogo de confirmação
+    handleOpenDialog();
+  };
+
 
   function chamarSnackbar(severity, message) {
     setSnackbarSeverity(severity);
@@ -523,9 +544,13 @@ export default function Produto() {
     setCategoriaEditando(null);
   };
 
-  const handleExcluirCategoria = async (e) => {
+  const handleConfirmExclusao = async (e) => {
     try {
-      await Axios.delete(`http://localhost:3000/categoria/deletar/${e.id}`);
+      await Axios.delete(`http://localhost:3000/categoria/deletar/${e.id}`, {
+        headers: {
+          'Ignore-Foreign-Keys': 'true'
+        }
+      });
       console.log("Item deletado com sucesso!");
       chamarSnackbar("success", "Categoria excluida");
 
@@ -1057,6 +1082,24 @@ export default function Produto() {
           </Alert>
         </Snackbar>
       </Stack>
+      <div>
+      <Button onClick={handleExcluirCategoria}>Excluir Categoria</Button>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Confirmação de Exclusão</DialogTitle>
+        <DialogContent>
+          Tem certeza de que deseja excluir esta categoria? Todos os produtos vinculados também serão excluídos.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirmExclusao} color="primary">
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
+    </div>
+    
   );
 }
