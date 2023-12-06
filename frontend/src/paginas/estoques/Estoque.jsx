@@ -17,7 +17,7 @@ import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems, secondaryListItems } from "./listItems";
-import Orders from "../estoque/Produtos";
+import Orders from "../estoques/Produtos";
 
 function Copyright(props) {
   return (
