@@ -1,13 +1,13 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Clientes from "./paginas/clientes/Clientes";
+import Clientes from "./paginas/Clientes/Clientes";
 import Error from "./Error";
-import Vendas from "./paginas/venda/Vendas"
+import Vendas from "./paginas/Venda/Vendas"
 import Estoque from "./paginas/Estoques/Estoque";
-import Dashboard from "./paginas/dashboards/Dashboard";
-import Login from "./paginas/login/Login";
-import Recuperar from "./paginas/login/Recuperar";
-import Cadastro from "./paginas/login/Cadastro";
+import Dashboard from "./paginas/Dashboards/Dashboard";
+import Login from "./paginas/Login/Login";
+import Recuperar from "./paginas/Login/Recuperar";
+import Cadastro from "./paginas/Login/Cadastro";
 
 
 function AppRoutes() {

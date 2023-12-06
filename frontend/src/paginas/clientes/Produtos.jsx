@@ -19,8 +19,8 @@ import {
 import MuiAlert from "@mui/material/Alert";
 
 import { AddCircleOutline as AddIcon } from "@mui/icons-material";
-import { listCliente } from "../services/service";
-import { listCategoria } from "../services/service";
+import { listCliente } from "../Services/service";
+import { listCategoria } from "../Services/service";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";

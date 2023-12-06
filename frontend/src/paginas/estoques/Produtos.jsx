@@ -19,8 +19,8 @@ import {
 import MuiAlert from "@mui/material/Alert";
 
 import { AddCircleOutline as AddIcon, ManageSearchRounded } from "@mui/icons-material";
-import { listProduto } from "../services/service";
-import { listCategoria, updateCategoria } from "../services/service";
+import { listProduto } from "../Services/service";
+import { listCategoria, updateCategoria } from "../Services/service";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
